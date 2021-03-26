@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>React Mongodb Website....</title>
+  </head>
+  <body>
+    <h1>This Is Mongodb Website.....</h1>
+    <form action="/products" method="POST">
+      <input type="text" name="name" id="" placeholder="name" />
+      <input type="text" name="price" id="" placeholder="price" />
+      <input type="text" name="quantity" id="" placeholder="quantity" />
+      <button type="submit">Add Product</button>
+    </form>
+    <div id="container"></div>
+    <div id="updatedContainer"></div>
+    <script>
+      fetch("/products")
+        .then((res) => res.json())
+        .then((products) => {
+          const container = document.getElementById("container");
+          products.forEach((pd) => {
+            const p = document.createElement("p");
+            p.innerHTML = `<div>
+                            <p>Name: ${pd.name} Price: ${pd.price} Quantity: ${pd.quantity}</p>
+                            <button onclick="handleUpdateBtn('${pd._id}')">Update Item</button>
+                            <button onclick="handleRemoveBtn(event, '${pd._id}')">Remove Item</button>
+                            </div>`;
+            container.appendChild(p);
+          });
+        });
+
+        const handleRemoveBtn = (event, id) =>{
+            fetch(`/deleted/${id}`, {
+                method: 'DELETE'
+            })
+            .then(res=> res.json())
+            .then(result => {
+                if(result){
+                    event.target.parentNode.style.display = 'none';
+                }
+            })
+        }
+
+        const handleUpdateBtn = id =>{
+            fetch(`/product/${id}`)
+            .then(res=> res.json())
+            .then(pd => {
+                const updatedHTML = document.getElementById('updatedContainer');
+                updatedHTML.innerHTML = `
+                    <h3>Updated ID: ${pd._id}</h3>
+                    Price: <input type="text" name="name" id="price" value="${pd.price}"/>
+                    Quantity: <input type="text" name="name" id="quantity" value="${pd.quantity}"/>
+                    <button onclick="updateBtn('${pd._id}')">Updated</button>
+                `
+            })
+        }
+        const updateBtn = (id) => {
+            const price = document.getElementById("price").value;
+            const quantity = document.getElementById("quantity").value;
+            const product ={quantity, price} 
+            fetch(`/update/${id}`, {
+                method:'PATCH',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(product)
+            })
+            .then(res=> res.json())
+            .then(result=> {
+                // console.log(result);
+            })
+        }
+
+
+
+    </script>
+  </body>
+</html>
