@@ -31,7 +31,7 @@ client.connect((err) => {
       res.send(result);
     });
   });
-
+//Product details
   app.get("/product/:id", (req, res) => {
     productsCollection
       .find({ _id: ObjectId(req.params.id) })
@@ -40,12 +40,14 @@ client.connect((err) => {
       });
   });
 
+//create data from ui form
   app.post("/products", (req, res) => {
     const newProduct = req.body;
     productsCollection.insertOne(newProduct);
     res.redirect('/')
   });
 
+  //data delete from mongodb database
   app.delete("/deleted/:id", (req, res) => {
     productsCollection
       .deleteOne({ _id: ObjectId(req.params.id) })
@@ -54,6 +56,7 @@ client.connect((err) => {
       });
   });
 
+  //update data mongodb
   app.patch("/update/:id", (req, res) => {
     productsCollection
       .updateOne(
